@@ -3,7 +3,7 @@
 # Cargar las variables de entorno
 source .env
 
-# Actualizar el sistema e instalar Apache.
+# Actualizar el sistema e instalar NFS y Git.
 sudo apt update && sudo apt install nfs-kernel-server git -y
 
 # Crear el directorio compartido.
@@ -24,12 +24,14 @@ echo "Archivo de configuración /etc/exports editado."
 # Reiniciar el servicio NFS para aplicar los cambios.
 sudo systemctl restart nfs-kernel-server
 
+# Clonar la aplicación dentro del directorio compartido
+cd "$WEB_ROUTE"
+sudo git clone $REPOSITORIO_URL .
+echo "Aplicación clonada en $WEB_ROUTE"
+
 # Leer y activar inmediatamente /etc/exports
 sudo exportfs -a 
 echo "Exportaciones NFS activadas."
 
-# Clonar la aplicación dentro del directorio compartido
-cd "$WEB_ROUTE"
-sudo git clone https://github.com/josejuansanchez/iaw-practica-lamp.git .
-echo "Aplicación clonada en $WEB_ROUTE"
+echo "Configuración del NFS completada con éxito."
 
