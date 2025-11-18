@@ -12,18 +12,22 @@ sudo apt update && sudo apt install -y \
     nfs-common 
 echo "Apache, PHP, NFS Client instalado."
 
+# sudo systemctl unmask nfs-common.service
+# sudo systemctl start nfs-common.service
+# echo "Servicio nfs-common desenmascarado y activado."
+
 # Crear el directorio local a de montar.
-sudo mkdir -p "$WEB_ROUTE"
+sudo mkdir -p /var/www/html/web
 
 # Permisos para acceder a los archivos.
-sudo chown -R www-data:www-data "$WEB_ROUTE"
-sudo chmod -R 755 "$WEB_ROUTE"
+sudo chown -R www-data:www-data /var/www/html/web
+sudo chmod -R 755 /var/www/html/web
 
 # Montar la carpeta compartida.
-sudo mount "$NFS_IP_WWW:$WEB_ROUTE" "$WEB_ROUTE"
+sudo mount "$NFS_IP_WWW:/var/www/html/web" /var/www/html/web
 
-if mountpoint -q "$WEB_ROUTE"; then
-    echo "Montaje de NFS desde $NFS_IP_WWW:$WEB_ROUTE en $WEB_ROUTE."
+if mountpoint -q /var/www/html/web; then
+    echo "Montaje de NFS desde $NFS_IP_WWW:/var/www/html/web en /var/www/html/web."
 else
     echo "ERROR: Fallo al montar la carpeta NFS"
 fi
@@ -32,8 +36,8 @@ fi
 cd /etc/apache2/sites-available
 sudo cp 000-default.conf server_www.conf
 
-sudo sed -i "s|DocumentRoot /var/www/html|DocumentRoot $WEB_ROUTE|" server_www.conf
-echo "DocumentRoot modificado a $WEB_ROUTE."
+sudo sed -i "s|DocumentRoot /var/www/html|DocumentRoot /var/www/html/web|" server_www.conf
+echo "DocumentRoot modificado a /var/www/html/web."
 
 # Habilitar el site configurado y deshabilitar el que viene por defecto.
 sudo a2ensite server_www.conf
@@ -60,7 +64,7 @@ else
 fi
 
 # Configuración de la Aplicación.
-CONFIG_FILE="$WEB_ROUTE/config.php"
+CONFIG_FILE=/var/www/html/web/config.php
 
 if [ -f "$CONFIG_FILE" ]; then
     # 1. Reemplazamos 'localhost' por la IP privada de MySQL.

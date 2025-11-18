@@ -23,7 +23,7 @@ sudo cp 000-default.conf balanceador.conf
 sudo tee balanceador.conf <<EOF
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
-    DocumentRoot "$WEB_ROUTE"
+    DocumentRoot /var/www/html/web
 
     <Proxy balancer://serverbalanceador>
         # Server 1
