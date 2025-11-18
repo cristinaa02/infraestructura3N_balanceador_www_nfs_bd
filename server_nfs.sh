@@ -16,8 +16,8 @@ echo "Propietario y grupo de $WEB_ROUTE cambiado."
 
 # Editar /etc/exports.
 sudo tee -a /etc/exports <<EOF
-"$WEB_ROUTE" $SERVER1_IP_WWW"(rw,sync,no_subtree_check)
-"$WEB_ROUTE" $SERVER2_IP_WWW(rw,sync,no_subtree_check)
+$WEB_ROUTE $SERVER1_IP_WWW"(rw,sync,no_subtree_check)
+$WEB_ROUTE $SERVER2_IP_WWW(rw,sync,no_subtree_check)
 EOF
 echo "Archivo de configuración /etc/exports editado."
 

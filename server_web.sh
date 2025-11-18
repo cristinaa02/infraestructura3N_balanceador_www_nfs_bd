@@ -20,7 +20,7 @@ sudo chown -R www-data:www-data "$WEB_ROUTE"
 sudo chmod -R 755 "$WEB_ROUTE"
 
 # Montar la carpeta compartida.
-sudo mount $NFS_IP_WWW:$WEB_ROUTE $WEB_ROUTE
+sudo mount "$NFS_IP_WWW:$WEB_ROUTE" "$WEB_ROUTE"
 
 if mountpoint -q "$WEB_ROUTE"; then
     echo "Montaje de NFS desde $NFS_IP_WWW:$WEB_ROUTE en $WEB_ROUTE."

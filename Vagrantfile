@@ -27,11 +27,17 @@ Vagrant.configure("2") do |config|
       serverNFS.vm.hostname = "serverNFS"
       serverNFS.vm.network "private_network", ip: "192.168.10.30", virtualbox__intnet: "red_www"
       serverNFS.vm.network "private_network", ip: "192.168.20.30", virtualbox__intnet: "red_bd"
+
+      serverNFS.vm.provision "file", source: ".env", destination: "/home/vagrant/.env"
+      serverNFS.vm.provision "shell", path: "server_nfs.sh"
     end
 
     config.vm.define "serverDB" do |serverDB|
       serverDB.vm.hostname = "serverDB"
       serverDB.vm.network "private_network", ip: "192.168.20.50", virtualbox__intnet: "red_bd"
+
+      serverDB.vm.provision "file", source: ".env", destination: "/home/vagrant/.env"
+      serverDB.vm.provision "shell", path: "server_db.sh"
     end
     
     config.vm.define "server1" do |server1|
