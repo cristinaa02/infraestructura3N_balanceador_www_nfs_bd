@@ -1,83 +1,37 @@
 #!/bin/bash
 
-# Cargar las variables de entorno
-source .env
+# variables de entorno
+NFS_IP_WWW="192.168.10.30"
+WP_DIR_NFS="/var/www/wordpress"
+DIR="/var/www/html"
 
 # Instalar Apache, PHP (con módulos), MySQL Client y NFS Client
-sudo apt update && sudo apt install -y \
-    apache2 \
-    php \
-    libapache2-mod-php \
-    php-mysql \
-    nfs-common 
-echo "Apache, PHP, NFS Client instalado."
+sudo apt update 
+sudo apt install -y apache2 php libapache2-mod-php php-mysql nfs-common
 
-# sudo systemctl unmask nfs-common.service
-# sudo systemctl start nfs-common.service
-# echo "Servicio nfs-common desenmascarado y activado."
+sudo systemctl stop apache2
+sudo rm -rf $DIR/*
 
 # Crear el directorio local a de montar.
-sudo mkdir -p /var/www/html/web
-
-# Permisos para acceder a los archivos.
-sudo chown -R www-data:www-data /var/www/html/web
-sudo chmod -R 755 /var/www/html/web
+sudo mkdir -p $DIR
 
 # Montar la carpeta compartida.
-sudo mount "$NFS_IP_WWW:/var/www/html/web" /var/www/html/web
+sudo mount $NFS_IP_WWW:$WP_DIR_NFS $DIR
 
-if mountpoint -q /var/www/html/web; then
-    echo "Montaje de NFS desde $NFS_IP_WWW:/var/www/html/web en /var/www/html/web."
+if mountpoint -q $DIR; then
+    echo "Montaje de NFS en $DIR."
 else
     echo "ERROR: Fallo al montar la carpeta NFS"
+    exit 1 # Detiene el script si el montaje falla.
 fi
 
-# Crear archivo de configuración de sitio.
-cd /etc/apache2/sites-available
-sudo cp 000-default.conf server_www.conf
+# # Añadir la entrada al fstab para que el montaje persista tras reinicios
+# FSTAB_ENTRY="$NFS_IP_WWW:$WP_DIR_NFS $DIR nfs defaults 0 0"
+# if ! grep -q "$FSTAB_ENTRY" /etc/fstab; then
+#     echo "$FSTAB_ENTRY" | sudo tee -a /etc/fstab
+# fi
 
-sudo sed -i "s|DocumentRoot /var/www/html|DocumentRoot /var/www/html/web|" server_www.conf
-echo "DocumentRoot modificado a /var/www/html/web."
+# Permisos para acceder a los archivos.
+sudo chown -R www-data:www-data $DIR
 
-# Habilitar el site configurado y deshabilitar el que viene por defecto.
-sudo a2ensite server_www.conf
-sudo a2dissite 000-default.conf
-echo "Habilitado el archivo /etc/apache2/sites-available/server_www.conf."
-
-# Reiniciar Apache.
-sudo systemctl restart apache2
-
-# Conexión a base de datos.
-
-# Detectar el nombre de la máquina actual.
-SERVER_NAME=$(hostname)
-
-if [ "$SERVER_NAME" = "server1" ]; then
-    # Si estamos en server1, usamos el usuario para server1.
-    APP_DB_USER="$DB_USER1"
-elif [ "$SERVER_NAME" = "server2" ]; then
-    # Si estamos en server2, usamos el usuario para server2.
-    APP_DB_USER="$DB_USER2"
-else
-    echo "ERROR: Máquina no identificada."
-    exit 1
-fi
-
-# Configuración de la Aplicación.
-CONFIG_FILE=/var/www/html/web/config.php
-
-if [ -f "$CONFIG_FILE" ]; then
-    # 1. Reemplazamos 'localhost' por la IP privada de MySQL.
-    sudo sed -i "s/localhost/$SERVERBD_IP_DB/g" "$CONFIG_FILE"
-    # 2. Reemplazamos el nombre de la BD.
-    sudo sed -i "s/database_name_here/$DB_NAME/g" "$CONFIG_FILE"
-    # 3. Reemplazamos el usuario por el usuario de la aplicación (variable dinámica).
-    sudo sed -i "s/username_here/$APP_DB_USER/g" "$CONFIG_FILE" 
-    # 4. Reemplazar la contraseña.
-    sudo sed -i "s/password_here/$DB_PASS/g" "$CONFIG_FILE"
-    echo "Configuración de DB completada en $CONFIG_FILE. Usuario usado: $APP_DB_USER"
-else
-    echo "ERROR: Archivo $CONFIG_FILE no encontrado."
-fi
-
-echo "Configuración del servidor web completada con éxito."
+sudo systemctl start apache2

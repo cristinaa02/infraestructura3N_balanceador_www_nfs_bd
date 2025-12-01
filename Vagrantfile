@@ -14,38 +14,23 @@ Vagrant.configure("2") do |config|
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "debian/bookworm64"
 
-    config.vm.define "balanceador" do |balanceador|
-      balanceador.vm.hostname = "balanceador"
-      balanceador.vm.network "private_network", ip: "192.168.10.1", virtualbox__intnet: "red_www"
-      balanceador.vm.network "forwarded_port", guest: 80, host: 8080
-      
-      balanceador.vm.provision "file", source: ".env", destination: "/home/vagrant/.env"
-      balanceador.vm.provision "shell", path: "balanceador.sh"
+    config.vm.define "serverDB" do |serverDB|
+      serverDB.vm.hostname = "serverDB"
+      serverDB.vm.network "private_network", ip: "192.168.20.50", virtualbox__intnet: "red_bd"
+      serverDB.vm.provision "shell", path: "server_db.sh"
     end
-    
+
     config.vm.define "serverNFS" do |serverNFS|
       serverNFS.vm.hostname = "serverNFS"
       serverNFS.vm.network "private_network", ip: "192.168.10.30", virtualbox__intnet: "red_www"
       serverNFS.vm.network "private_network", ip: "192.168.20.30", virtualbox__intnet: "red_bd"
-
-      serverNFS.vm.provision "file", source: ".env", destination: "/home/vagrant/.env"
       serverNFS.vm.provision "shell", path: "server_nfs.sh"
-    end
-
-    config.vm.define "serverDB" do |serverDB|
-      serverDB.vm.hostname = "serverDB"
-      serverDB.vm.network "private_network", ip: "192.168.20.50", virtualbox__intnet: "red_bd"
-
-      serverDB.vm.provision "file", source: ".env", destination: "/home/vagrant/.env"
-      serverDB.vm.provision "shell", path: "server_db.sh"
     end
     
     config.vm.define "server1" do |server1|
       server1.vm.hostname = "server1"
       server1.vm.network "private_network", ip: "192.168.10.10", virtualbox__intnet: "red_www"
       server1.vm.network "private_network", ip: "192.168.20.10", virtualbox__intnet: "red_bd"
-      
-      server1.vm.provision "file", source: ".env", destination: "/home/vagrant/.env"
       server1.vm.provision "shell", path: "server_web.sh"
     end
 
@@ -53,9 +38,14 @@ Vagrant.configure("2") do |config|
       server2.vm.hostname = "server2"
       server2.vm.network "private_network", ip: "192.168.10.20", virtualbox__intnet: "red_www"
       server2.vm.network "private_network", ip: "192.168.20.20", virtualbox__intnet: "red_bd"
-      
-      server2.vm.provision "file", source: ".env", destination: "/home/vagrant/.env"
       server2.vm.provision "shell", path: "server_web.sh"
+    end
+
+    config.vm.define "balanceador" do |balanceador|
+      balanceador.vm.hostname = "balanceador"
+      balanceador.vm.network "private_network", ip: "192.168.10.1", virtualbox__intnet: "red_www"
+      balanceador.vm.network "forwarded_port", guest: 80, host: 8080
+      balanceador.vm.provision "shell", path: "balanceador.sh"
     end
 
   # Disable automatic box update checking. If you disable this, then
