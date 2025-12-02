@@ -34,8 +34,8 @@ sudo tee balanceador.conf <<EOF
         ProxySet stickysession=ROUTEID
     </Proxy>
 
-    ProxyPass / balancer://wpcluster/
-    ProxyPassReverse / balancer://wpcluster/
+    ProxyPass / balancer://wpbalanceadorweb/
+    ProxyPassReverse / balancer://wpbalanceadorweb/
 
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
