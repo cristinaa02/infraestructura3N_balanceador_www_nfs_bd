@@ -6,6 +6,9 @@ DB_USER="crisalm"
 DB_PASS="pass"
 DB_HOST="192.168.20.%"
 
+set -e
+sudo hostnamectl set-hostname DBCrisAlm
+
 # Actualizar el sistema e instalar MariaDB.
 sudo apt update
 sudo apt install -y mariadb-server

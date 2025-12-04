@@ -9,6 +9,9 @@ SERVER1_IP_WWW="192.168.10.10"
 SERVER2_IP_WWW="192.168.10.20"
 WP_DIR="/var/www/wordpress"
 
+set -e
+sudo hostnamectl set-hostname NFSCrisAlm
+
 # Actualizar el sistema e instalar NFS, etc.
 sudo apt update 
 sudo apt install -y nfs-kernel-server apache2 php wget unzip php-mysql
@@ -48,8 +51,8 @@ fi
 # Personalización.
 NOMBRE="CrisAlm"
 echo "define('WP_ALUMNO', '$NOMBRE');" | sudo tee -a $WP_DIR/wp-config.php
-echo "define('WP_HOME','http://localhost:8080');" | sudo tee -a $WP_DIR/wp-config.php
-echo "define('WP_SITEURL','http://localhost:8080');" | sudo tee -a $WP_DIR/wp-config.php
+echo "define('WP_HOME','https://iawcris.ddns.net');" | sudo tee -a $WP_DIR/wp-config.php
+echo "define('WP_SITEURL','https://iawcris.ddns.net');" | sudo tee -a $WP_DIR/wp-config.php
 
 # Editar /etc/exports.
 sudo echo "$WP_DIR 192.168.10.0/24(rw,sync,no_subtree_check)" | sudo tee -a /etc/exports
