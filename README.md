@@ -4,13 +4,12 @@ Infraestructura en 3 niveles: un balanceador, un cluster de dos servidores web, 
 ## Índice
 
 * [1. Arquitectura](#1-arquitectura)
-* [2. Requisitos Previos](#2-requisitos-previos)
-* [3. Configuración](#3-configuración)
-* [4. Script de Aprovisionamiento](#4-script-de-aprovisionamiento)
-  * [4.1 Base de Datos](#41-base-de-datos)
-  * [4.2 NFS](#42-NFS)
-  * [4.3 Web](#43-web)
-  * [4.4 Balanceador](#44-balanceador)
+* [2. Script de Aprovisionamiento](#2-script-de-aprovisionamiento)
+  * [2.1 Base de Datos](#41-base-de-datos)
+  * [2.2 NFS](#42-NFS)
+  * [2.3 Web](#43-web)
+  * [2.4 Balanceador](#44-balanceador)
+* [3. Configuración en AWS](#6-configuración-en-AWS)
 * [6. Comprobación y Uso](#6-comprobación-y-uso)
 * [7. Conclusión](#7-conclusión)
 ---
@@ -30,46 +29,56 @@ La infraestructura se distribuye en cinco máquinas virtuales, creando varias ca
 (explicar la red)
 
 -----
-
-## 2\. Requisitos Previos.
-
-
-
------
-
-## 3\. Configuración.
-
-
-
------
     
-## 4\. Script de Aprovisionamiento.
+## 2\. Script de Aprovisionamiento.
 
 Cada instancia tendrá un script de aprovisionamiento para facilitar su configuración.
 
-### 4.1\. Base de Datos.
+### 2.1\. Base de Datos.
 
 En el script del servidor de base de datos, 
 
 ![bd_listen](images/bd_listen.png)
 
-### 4.2\. NFS.
+### 2.2\. NFS.
 
 En el script del servidor de NFS, 
 
 ![nfs_carpetas](images/nfs_carpetas.png)
 
-### 4.3\. Web.
+### 2.3\. Web.
 
 En el script de los servidores web, 
 
 ![bd_listen](images/web_https.png)
 
-### 4.4\. Balanceador.
+### 2.4\. Balanceador.
 
 En el script del servidor del balanceador, 
 
 ![balanceador_http](images/balanceador_http.png)
+
+-----
+
+## 3\. Configuración en AWS.
+
+### 3.1\. Crear la VPC.
+
+En el script del servidor de base de datos, 
+
+### 3.2\. Crear las subredes.
+
+En el script del servidor de base de datos, 
+
+### 3.3\. Configurar el Internet Gateway y Rutas.
+
+En el script del servidor de base de datos, 
+### 3.1\. Crear la VPC.
+
+En el script del servidor de base de datos, 
+### 3.1\. Crear la VPC.
+
+En el script del servidor de base de datos, 
 
 -----
 
