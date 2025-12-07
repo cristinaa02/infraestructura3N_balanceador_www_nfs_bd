@@ -49,7 +49,27 @@ Cada instancia tendrá un script de aprovisionamiento para facilitar su configur
 
 ### 4.1\. Base de Datos.
 
+En el script del servidor de base de datos, 
 
+![bd_listen](images/bd_listen.png)
+
+### 4.2\. NFS.
+
+En el script del servidor de NFS, 
+
+![nfs_carpetas](images/nfs_carpetas.png)
+
+### 4.3\. Web.
+
+En el script de los servidores web, 
+
+![bd_listen](images/web_https.png)
+
+### 4.4\. Balanceador.
+
+En el script del servidor del balanceador, 
+
+![balanceador_http](images/balanceador_http.png)
 
 -----
 
