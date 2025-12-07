@@ -64,16 +64,41 @@ En el script del servidor del balanceador,
 
 ### 3.1\. Crear la VPC.
 
-Se le asigna un nombre y un espacio de red.
+Una VPC (Virtual Private Cloud) es una red privada dentro de AWS.
 
+Se le asigna un nombre y un espacio de red (Bloque CIDR IPv4).
+
+![vpc](images/vpc.png)
+![vpc](images/vpc2.png)
 
 ### 3.2\. Crear las subredes.
 
-En el script del servidor de base de datos, 
+Se crean tres subredes: una pública (balanceador) y dos privadas, una para los servidores web y otra para la base de datos.
+
+A cada subred, se le asignan los siguientes parámetros: nombre, zona de disponibilidad y CIDR. 
+
+![subred](images/subred.png)
+![subred](images/subred2.png)
 
 ### 3.3\. Configurar el Internet Gateway y Rutas.
 
-En el script del servidor de base de datos, 
+Esto permite la comunicación entre tu VPC y el internet.
+
+En Puertas de enlace a Internet, se crea un nueva puerta de enlace asignándole un nombre. Una vez creado, se asocia a la VPC creada anteriormente.
+
+![igw](images/igw.png)
+![igw](images/igw2.png)
+
+En Tablas de enrutamiento, se crea dándole un nombre y seleccionando la VPC. Después, en el caso de la subred pública, en Editar rutas, se añade la ruta por defecto hacia Internet, incluyendo la puerta de enlace. Las subredes privadas no tendrán salida a Internet.
+
+![tablaruta](images/tablaruta.png)
+![tablaruta](images/tablaruta2.png)
+
+A continuación, en Editar asociaciones, se asocia a la subred deseada.
+
+### 3.5\. Configurar ACLs.
+
+Un ACL actúa como un firewall que actúa sobre la subred, controlando el tráfico que entra y sale.
 
 ### 3.4\. Crear las instancias.
 
