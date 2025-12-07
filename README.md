@@ -64,7 +64,8 @@ En el script del servidor del balanceador,
 
 ### 3.1\. Crear la VPC.
 
-En el script del servidor de base de datos, 
+Se le asigna un nombre y un espacio de red.
+
 
 ### 3.2\. Crear las subredes.
 
@@ -73,10 +74,12 @@ En el script del servidor de base de datos,
 ### 3.3\. Configurar el Internet Gateway y Rutas.
 
 En el script del servidor de base de datos, 
-### 3.1\. Crear la VPC.
+
+### 3.4\. Crear las instancias.
 
 En el script del servidor de base de datos, 
-### 3.1\. Crear la VPC.
+
+### 3.5\. Crear la VPC.
 
 En el script del servidor de base de datos, 
 
