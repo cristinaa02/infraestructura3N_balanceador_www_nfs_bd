@@ -16,7 +16,7 @@ Infraestructura en 3 niveles: un balanceador, un cluster de dos servidores web, 
 
 ## 1\. Arquitectura.
 
-La infraestructura se distribuye en cinco máquinas virtuales, creando varias capa de aislamientos esenciales para la seguridad.
+La infraestructura se distribuye en cinco máquinas virtuales, creando capas de aislamiento esenciales para la alta disponibilidad y la seguridad.
 
 | Máquina | Función | IP |
 | --- | --- | --- |
@@ -26,7 +26,12 @@ La infraestructura se distribuye en cinco máquinas virtuales, creando varias ca
 | **NFSCrisAlm** | Servidor NFS | `192.168.10.30` `192.168.20.30` |
 | **BDCrisAlm** | Servidor de Base de Datos | `192.168.20.50` |
  
-(explicar la red)
+El tráfico se gestiona mediante dos subredes:
+
+* Subred WWW: utilizada por el balanceador y los servidores web servidos por el NFS.
+* Subred BD: utlizada por los servidores web y la base de datos para gestionar las peticiones MySQL.
+
+El balanceador tendrá también una IP pública que se asociará a un dominio, permitiendo el acceso desde Internet.
 
 -----
     
@@ -36,15 +41,27 @@ Cada instancia tendrá un script de aprovisionamiento para facilitar su configur
 
 ### 2.1\. Base de Datos.
 
-En el script del servidor de base de datos, 
+El script de la BD realiza las siguientes configuraciones:
 
+* Establece el hostname (`BDCrisAlm`).
+* Instala MariaDB.
+* Configura el servicio para escuchar en todas las interfaces (`bind-address = 0.0.0.0`).
 ![bd_listen](images/bd_listen.png)
+* Crea la base de datos y un usuario con privilegios.
+![bd](images/bd.png)
 
 ### 2.2\. NFS.
 
-En el script del servidor de NFS, 
+El script del servidor NFS (NFSCrisAlm) prepara el directorio compartido y configura WordPress para la DB remota.
 
+* Establece el hostname (`NFSCrisAlm`) y el directorio de WordPress.
+* Instala NFS Kernel Server.
+* Descarga y descomprime WordPress.
 ![nfs_carpetas](images/nfs_carpetas.png)
+* Configura `wp-config.php`, apuntando al servidor DB: `DB_HOST: 192.168.20.50`.
+![nfs_bdconf](images/nfs_bdconf.png)
+* Exporta el directorio de WordPress permitiendo el acceso solo a la subred de servidores web.
+![nfs_exports](images/nfs_exports.png)
 
 ### 2.3\. Web.
 
@@ -98,13 +115,30 @@ A continuación, en Editar asociaciones, se asocia a la subred deseada.
 
 ### 3.5\. Configurar ACLs.
 
-Un ACL actúa como un firewall que actúa sobre la subred, controlando el tráfico que entra y sale.
+Un ACL actúa como un firewall que actúa sobre la subred, controlando el tráfico que entra y sale. Se accede en Network ACLs.
 
-### 3.4\. Crear las instancias.
+Se modifican las entradas cambiando los parámetros regla, puerto, origen y accción. Se añade lo mismo en las reglas de salida o destino.
 
-En el script del servidor de base de datos, 
+### 3.6\. Configurar grupos de seguridad.
 
-### 3.5\. Crear la VPC.
+Un grupo de seguridad actúa como un firewall que actúa sobre una instancia, controlando el tráfico que entra y sale.
+
+Hay que permitir HTTP, HTTPS y SSH para el balanceador y los servidores web, pero únicamente SSH para la base de datos.
+
+### 3.7\. Crear las instancias.
+
+Desde EC2, se lanza una instancia. Se le asignan nombre, imagen (Debian, en este caso) y tipo (el que viene por defecto).
+
+![instancia](images/instancia.png)
+
+En el apartado Configuraciones de red, se selecciona la VPC, la subred para la instancia a crear y el grupo se seguridad creado.
+
+![instancia2](images/instancia2.png)
+![instancia3](images/instancia3.png)
+![instancia6](images/instancia6.png)
+
+
+### 3.8\. Crear la VPC.
 
 En el script del servidor de base de datos, 
 
