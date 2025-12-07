@@ -7,6 +7,10 @@ Infraestructura en 3 niveles: un balanceador, un cluster de dos servidores web, 
 * [2. Requisitos Previos](#2-requisitos-previos)
 * [3. Configuración](#3-configuración)
 * [4. Script de Aprovisionamiento](#4-script-de-aprovisionamiento)
+  * [4.1 Base de Datos](#41-base-de-datos)
+  * [4.2 NFS](#42-NFS)
+  * [4.3 Web](#43-web)
+  * [4.4 Balanceador](#44-balanceador)
 * [6. Comprobación y Uso](#6-comprobación-y-uso)
 * [7. Conclusión](#7-conclusión)
 ---
@@ -40,6 +44,10 @@ La infraestructura se distribuye en cinco máquinas virtuales, creando varias ca
 -----
     
 ## 4\. Script de Aprovisionamiento.
+
+Cada instancia tendrá un script de aprovisionamiento para facilitar su configuración.
+
+### 4.1\. Base de Datos.
 
 
 
