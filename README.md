@@ -122,7 +122,6 @@ El script del Balanceador (BalanceadorCrisAlm) maneja el tráfico público y el 
 Una VPC (Virtual Private Cloud) es una red privada dentro de AWS.
 
 ![vpc](images/vpc.png)
-<img src="images/vpc.png" width="600"/>
 
 Se le asigna un nombre y un bloque CIDR IPv4 (una dirección de red con su máscara).
 
