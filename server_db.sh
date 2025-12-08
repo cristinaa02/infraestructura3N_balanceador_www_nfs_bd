@@ -26,5 +26,5 @@ FLUSH PRIVILEGES;
 EOF
 echo "Host: 192.168.20.50 | DB: $DB_NAME | User: $DB_USER | Pass: $DB_PASS"
 
-# Eliminar la puerta de enlace de la NAT
-sudo ip route del default
+# # Eliminar la puerta de enlace de la NAT
+# sudo ip route del default

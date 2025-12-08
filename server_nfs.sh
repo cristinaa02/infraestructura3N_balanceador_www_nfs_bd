@@ -48,12 +48,6 @@ else
     echo "ERROR: Archivo $CONFIG_FILE no encontrado."
 fi
 
-# Personalización.
-NOMBRE="CrisAlm"
-echo "define('WP_ALUMNO', '$NOMBRE');" | sudo tee -a $WP_DIR/wp-config.php
-echo "define('WP_HOME','https://iawcris.ddns.net');" | sudo tee -a $WP_DIR/wp-config.php
-echo "define('WP_SITEURL','https://iawcris.ddns.net');" | sudo tee -a $WP_DIR/wp-config.php
-
 # Editar /etc/exports.
 sudo echo "$WP_DIR 192.168.10.0/24(rw,sync,no_subtree_check)" | sudo tee -a /etc/exports
 
