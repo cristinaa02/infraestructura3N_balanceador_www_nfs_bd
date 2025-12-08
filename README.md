@@ -13,13 +13,12 @@ Infraestructura en 3 niveles: un balanceador, un cluster de dos servidores web, 
   * [3.1 Crear la VPC](#31-crear-la-vpc)
   * [3.2 Crear las subredes](#32-crear-las-subredes)
   * [3.3 Configurar el Internet Gateway y Rutas](#33-configurar-el-internet-gateway-y-rutas)
-  * [3.4 Configurar Interfaces de Red Fijas (ENIs)](#34-configurar-interfaces-de-red-fijas-enis)
-  * [3.5 Configurar ACLs](#35-configurar-acls)
-  * [3.6 Configurar Grupos de Seguridad](#36-configurar-grupos-de-seguridad)
-  * [3.7 Crear las Instancias y Asignación de IP Fija](#37-crear-las-instancias-y-asignación-de-ip-fija)
-  * [3.8 Acceso Público y EIP](#38-acceso-público-y-eip)
-* [6. Comprobación y Uso](#6-comprobación-y-uso)
-* [7. Conclusión](#7-conclusión)
+  * [3.4 Configurar ACLs](#35-configurar-acls)
+  * [3.5 Configurar Grupos de Seguridad](#36-configurar-grupos-de-seguridad)
+  * [3.6 Crear las Instancias](#37-crear-las-instancias)
+  * [3.7 Acceso Público](#38-acceso-público)
+* [4. Comprobación y Uso](#6-comprobación-y-uso)
+* [5. Conclusión](#7-conclusión)
 
 ---
 
@@ -154,13 +153,13 @@ Una vez creada, se asocia a una subred (Editar asociaciones). También, en el ca
 
 ![tablaruta](images/tablaruta2.png)
 
-### 3.5\. Configurar ACLs.
+### 3.4\. Configurar ACLs.
 
 Un ACL actúa como un firewall que actúa sobre la subred, controlando el tráfico que entra y sale. Se configura ACL sin estado en la subred pública. El ACL de las subredes privadas niegan cualquier tráfico de entrada que no provenga de la red interna. 
 
 Para ello, se modifican las entradas cambiando los parámetros regla, puerto, origen y accción. Se añade lo mismo en las reglas de salida o destino.
 
-### 3.6\. Configurar grupos de seguridad.
+### 3.5\. Configurar grupos de seguridad.
 
 Un grupo de seguridad actúa como un firewall que actúa sobre una instancia.
 
@@ -168,7 +167,7 @@ Hay que permitir HTTP, HTTPS y SSH para el balanceador y los servidores web y NF
 
 ![instancia4](images/instancia4.png)
 
-### 3.7\. Crear las instancias.
+### 3.6\. Crear las instancias.
 
 Desde EC2, se lanza una instancia. Se le asignan nombre, imagen (Debian, en este caso) y tipo (el que viene por defecto).
 
@@ -187,7 +186,7 @@ El script de aprovisionamiento se pega en **Datos de Usuario**.
 ![instancia6](images/instancia6.png)
 
 
-### 3.8\. Acceso público.
+### 3.7\. Acceso público.
 
 Es necesario asignar una IP Elástica (pública estática y reservada) asociada al balanceador. Esto garantiza que el punto de acceso público no cambie si la instancia se reinicia. Esta IP será la que se resgistre en un dominio público, `iawcris.ddns.net` en este caso.
 
@@ -195,12 +194,12 @@ Es necesario asignar una IP Elástica (pública estática y reservada) asociada 
 
 -----
 
-## 6\. Comprobación y Uso.
+## 4\. Comprobación y Uso.
 
 El usuario final accede a la aplicación mediante el dominio configurado (`https://iawcris.ddns.net`). Así se comprueba la funcionalidad completa de WordPress, confirmando el balanceo de carga entre los dos servidores web y el correcto montaje del NFS.
 
 ![resultado](images/resultado.png)
 
-## 7\. Conclusión.
+## 5\. Conclusión.
 
-Se ha desplegado con éxito una arquitectura de WordPress de tres niveles en AWS, garantizando alta disponibilidad, cifrado de tráfico punto a punto (HTTPS $\rightarrow$ HTTPS) y un estricto aislamiento de red.
+Se ha desplegado con éxito una arquitectura de WordPress de tres niveles en AWS, garantizando alta disponibilidad, cifrado de tráfico y un estricto aislamiento de red.
