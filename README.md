@@ -3,15 +3,26 @@ Infraestructura en 3 niveles: un balanceador, un cluster de dos servidores web, 
 
 ## Índice
 
+## Índice
+
 * [1. Arquitectura](#1-arquitectura)
 * [2. Script de Aprovisionamiento](#2-script-de-aprovisionamiento)
-  * [2.1 Base de Datos](#41-base-de-datos)
-  * [2.2 NFS](#42-NFS)
-  * [2.3 Web](#43-web)
-  * [2.4 Balanceador](#44-balanceador)
-* [3. Configuración en AWS](#6-configuración-en-AWS)
+  * [2.1 Base de Datos](#21-base-de-datos)
+  * [2.2 NFS](#22-nfs)
+  * [2.3 Web](#23-web)
+  * [2.4 Balanceador](#24-balanceador)
+* [3. Configuración en AWS](#3-configuración-en-aws)
+  * [3.1 Crear la VPC](#31-crear-la-vpc)
+  * [3.2 Crear las subredes](#32-crear-las-subredes)
+  * [3.3 Configurar el Internet Gateway y Rutas](#33-configurar-el-internet-gateway-y-rutas)
+  * [3.4 Configurar Interfaces de Red Fijas (ENIs)](#34-configurar-interfaces-de-red-fijas-enis)
+  * [3.5 Configurar ACLs](#35-configurar-acls)
+  * [3.6 Configurar Grupos de Seguridad](#36-configurar-grupos-de-seguridad)
+  * [3.7 Crear las Instancias y Asignación de IP Fija](#37-crear-las-instancias-y-asignación-de-ip-fija)
+  * [3.8 Acceso Público y EIP](#38-acceso-público-y-eip)
 * [6. Comprobación y Uso](#6-comprobación-y-uso)
 * [7. Conclusión](#7-conclusión)
+
 ---
 
 ## 1\. Arquitectura.
@@ -43,37 +54,67 @@ Cada instancia tendrá un script de aprovisionamiento para facilitar su configur
 
 El script de la BD realiza las siguientes configuraciones:
 
-* Establece el hostname (`BDCrisAlm`).
+* Establece el hostname.
 * Instala MariaDB.
 * Configura el servicio para escuchar en todas las interfaces (`bind-address = 0.0.0.0`).
+
 ![bd_listen](images/bd_listen.png)
+
 * Crea la base de datos y un usuario con privilegios.
+
 ![bd](images/bd.png)
 
 ### 2.2\. NFS.
 
 El script del servidor NFS (NFSCrisAlm) prepara el directorio compartido y configura WordPress para la DB remota.
 
-* Establece el hostname (`NFSCrisAlm`) y el directorio de WordPress.
+* Establece el hostname y el directorio de WordPress.
 * Instala NFS Kernel Server.
 * Descarga y descomprime WordPress.
+  
 ![nfs_carpetas](images/nfs_carpetas.png)
+
 * Configura `wp-config.php`, apuntando al servidor DB: `DB_HOST: 192.168.20.50`.
+
 ![nfs_bdconf](images/nfs_bdconf.png)
+
 * Exporta el directorio de WordPress permitiendo el acceso solo a la subred de servidores web.
+
 ![nfs_exports](images/nfs_exports.png)
 
 ### 2.3\. Web.
 
-En el script de los servidores web, 
+El script de los servidores web, el mismo para ambos, realiza la configuración de la aplicación y el cifrado SSL.
 
-![bd_listen](images/web_https.png)
+* Establece el hostname.
+* Instala Apache2, PHP y el cliente NFS.
+* Monta el recurso compartido NFS en `/var/www/html` y asegura la persistencia en `fstab` (para que no se desmonte al reiniciar la instancia).
+* Ejecuta `wp core install` con `wp-cli` para inicializar las tablas de la DB.
+
+![web_wp_cli](images/web_wp_cli.png)
+  
+* Personaliza la página de inicio.
+* Genera un certificado autofirmado.
+
+![web_ssl](images/web_ssl.png)
+ 
+* Configura HTTP (en caso de que el HTTPS falle) y HTTPS (puerto 443).
+
+![web_https](images/web_https.png)
 
 ### 2.4\. Balanceador.
 
-En el script del servidor del balanceador, 
+El script del Balanceador (BalanceadorCrisAlm) maneja el tráfico público y el proxy interno.
+
+* Establece el hostname.
+* Instala Apache2 y los módulos de proxy y SSL.
+* Configura en el puerto 80 la redirección a HTTPS.
 
 ![balanceador_http](images/balanceador_http.png)
+  
+* Configura en el puerto 444 el SSL y el balanceo.
+
+![balanceador_https](images/balanceador_https.png)
 
 -----
 
@@ -83,47 +124,49 @@ En el script del servidor del balanceador,
 
 Una VPC (Virtual Private Cloud) es una red privada dentro de AWS.
 
-Se le asigna un nombre y un espacio de red (Bloque CIDR IPv4).
-
 ![vpc](images/vpc.png)
+
+Se le asigna un nombre y un bloque CIDR IPv4 (una dirección de red con su máscara).
+
 ![vpc](images/vpc2.png)
 
 ### 3.2\. Crear las subredes.
 
-Se crean tres subredes: una pública (balanceador) y dos privadas, una para los servidores web y otra para la base de datos.
-
-A cada subred, se le asignan los siguientes parámetros: nombre, zona de disponibilidad y CIDR. 
+Se crean tres subredes: una pública y dos privadas, garantizando que las IPs fijas estén dentro de los rangos.
 
 ![subred](images/subred.png)
+
+A cada subred, se le asignan los siguientes parámetros: un nombre, una zona de disponibilidad (si se quiere asignar una en concreto) y un bloque CIDR IPv4. 
+
 ![subred](images/subred2.png)
 
 ### 3.3\. Configurar el Internet Gateway y Rutas.
 
-Esto permite la comunicación entre tu VPC y el internet.
+Puertas de Enlace a Internet: se crea un IGW (Internet Gateway) para permitir la comunicación de la VPC con Internet. Se le asigna un nombre y, una vez creado, se asocia a la VPC.
 
-En Puertas de enlace a Internet, se crea un nueva puerta de enlace asignándole un nombre. Una vez creado, se asocia a la VPC creada anteriormente.
+![igw](images/igw.png) ![igw](images/igw2.png)
 
-![igw](images/igw.png)
-![igw](images/igw2.png)
-
-En Tablas de enrutamiento, se crea dándole un nombre y seleccionando la VPC. Después, en el caso de la subred pública, en Editar rutas, se añade la ruta por defecto hacia Internet, incluyendo la puerta de enlace. Las subredes privadas no tendrán salida a Internet.
+A las rutas, que se crean en Tablas de enrutamiento, se les da un nombre y se selecciona la VPC. 
 
 ![tablaruta](images/tablaruta.png)
-![tablaruta](images/tablaruta2.png)
 
-A continuación, en Editar asociaciones, se asocia a la subred deseada.
+Una vez creada, se asocia a una subred (Editar asociaciones). También, en el caso de la subred pública, se añade la ruta hacia la puerta de enlace (Editar rutas). Las subredes privadas no tendrán salida a Internet.
+
+![tablaruta](images/tablaruta2.png)
 
 ### 3.5\. Configurar ACLs.
 
-Un ACL actúa como un firewall que actúa sobre la subred, controlando el tráfico que entra y sale. Se accede en Network ACLs.
+Un ACL actúa como un firewall que actúa sobre la subred, controlando el tráfico que entra y sale. Se configura ACL sin estado en la subred pública. El ACL de las subredes privadas niegan cualquier tráfico de entrada que no provenga de la red interna. 
 
-Se modifican las entradas cambiando los parámetros regla, puerto, origen y accción. Se añade lo mismo en las reglas de salida o destino.
+Para ello, se modifican las entradas cambiando los parámetros regla, puerto, origen y accción. Se añade lo mismo en las reglas de salida o destino.
 
 ### 3.6\. Configurar grupos de seguridad.
 
-Un grupo de seguridad actúa como un firewall que actúa sobre una instancia, controlando el tráfico que entra y sale.
+Un grupo de seguridad actúa como un firewall que actúa sobre una instancia.
 
-Hay que permitir HTTP, HTTPS y SSH para el balanceador y los servidores web, pero únicamente SSH para la base de datos.
+Hay que permitir HTTP, HTTPS y SSH para el balanceador y los servidores web y NFS. En el servidor de base de datos hay que tener más precauciones; por ejemplo, el tráfico por el puerto 3306 (de MySQL) que solo puede provenir de los servidores web y NFS.
+
+![instancia4](images/instancia4.png)
 
 ### 3.7\. Crear las instancias.
 
@@ -134,18 +177,26 @@ Desde EC2, se lanza una instancia. Se le asignan nombre, imagen (Debian, en este
 En el apartado Configuraciones de red, se selecciona la VPC, la subred para la instancia a crear y el grupo se seguridad creado.
 
 ![instancia2](images/instancia2.png)
+
+Se le asignan las direcciones IPs principales a cada interfaz de red.
+
 ![instancia3](images/instancia3.png)
+
+El script de aprovisionamiento se pega en **Datos de Usuario**.
+
 ![instancia6](images/instancia6.png)
 
 
-### 3.8\. Crear la VPC.
+### 3.8\. Acceso público.
 
-En el script del servidor de base de datos, 
+Es necesario asignar una IP Elástica (pública estática y reservada) asociada al balanceador. Esto garantiza que el punto de acceso público no cambie si la instancia se reinicia. Esta IP será la que se resgistre en un dominio público, `iawcris.ddns.net` en este caso.
 
 -----
 
 ## 6\. Comprobación y Uso.
 
-
+El usuario final accede a la aplicación mediante el dominio configurado. Así se comprueba la funcionalidad completa de WordPress, confirmando el balanceo de carga entre los dos servidores web y el correcto montaje del NFS.
 
 ## 7\. Conclusión.
+
+Se ha desplegado con éxito una arquitectura de WordPress de tres niveles en AWS, garantizando alta disponibilidad, cifrado de tráfico punto a punto (HTTPS $\rightarrow$ HTTPS) y un estricto aislamiento de red.
