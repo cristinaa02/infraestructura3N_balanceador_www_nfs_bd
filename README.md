@@ -60,7 +60,6 @@ El script de la BD realiza las siguientes configuraciones:
 * Crea la base de datos y un usuario con privilegios.
 
 ![bd](images/bd.png)
-<img src="images/bd.png" width="300"/>
 
 ### 2.2\. NFS.
 
@@ -123,6 +122,7 @@ El script del Balanceador (BalanceadorCrisAlm) maneja el tráfico público y el 
 Una VPC (Virtual Private Cloud) es una red privada dentro de AWS.
 
 ![vpc](images/vpc.png)
+<img src="images/vpc.png" width="500"/>
 
 Se le asigna un nombre y un bloque CIDR IPv4 (una dirección de red con su máscara).
 
