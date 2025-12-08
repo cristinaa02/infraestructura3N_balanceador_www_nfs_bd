@@ -191,6 +191,8 @@ El script de aprovisionamiento se pega en **Datos de Usuario**.
 
 Es necesario asignar una IP Elástica (pública estática y reservada) asociada al balanceador. Esto garantiza que el punto de acceso público no cambie si la instancia se reinicia. Esta IP será la que se resgistre en un dominio público, `iawcris.ddns.net` en este caso.
 
+![ipelastica](images/ipelastica.png)
+
 -----
 
 ## 6\. Comprobación y Uso.
