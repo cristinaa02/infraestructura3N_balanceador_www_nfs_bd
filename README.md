@@ -197,7 +197,9 @@ Es necesario asignar una IP Elástica (pública estática y reservada) asociada 
 
 ## 6\. Comprobación y Uso.
 
-El usuario final accede a la aplicación mediante el dominio configurado. Así se comprueba la funcionalidad completa de WordPress, confirmando el balanceo de carga entre los dos servidores web y el correcto montaje del NFS.
+El usuario final accede a la aplicación mediante el dominio configurado (`https://iawcris.ddns.net`). Así se comprueba la funcionalidad completa de WordPress, confirmando el balanceo de carga entre los dos servidores web y el correcto montaje del NFS.
+
+![resultado](images/resultado.png)
 
 ## 7\. Conclusión.
 
