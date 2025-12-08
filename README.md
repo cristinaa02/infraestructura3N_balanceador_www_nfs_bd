@@ -3,8 +3,6 @@ Infraestructura en 3 niveles: un balanceador, un cluster de dos servidores web, 
 
 ## Índice
 
-## Índice
-
 * [1. Arquitectura](#1-arquitectura)
 * [2. Script de Aprovisionamiento](#2-script-de-aprovisionamiento)
   * [2.1 Base de Datos](#21-base-de-datos)
@@ -144,7 +142,9 @@ A cada subred, se le asignan los siguientes parámetros: un nombre, una zona de 
 
 Puertas de Enlace a Internet: se crea un IGW (Internet Gateway) para permitir la comunicación de la VPC con Internet. Se le asigna un nombre y, una vez creado, se asocia a la VPC.
 
-![igw](images/igw.png) ![igw](images/igw2.png)
+![igw](images/igw.png) 
+
+![igw](images/igw2.png)
 
 A las rutas, que se crean en Tablas de enrutamiento, se les da un nombre y se selecciona la VPC. 
 
