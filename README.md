@@ -60,6 +60,7 @@ El script de la BD realiza las siguientes configuraciones:
 * Crea la base de datos y un usuario con privilegios.
 
 ![bd](images/bd.png)
+<img src="images/bd.png" width="300"/>
 
 ### 2.2\. NFS.
 
